@@ -1,0 +1,17 @@
+<%- include("../partials/header") %>
+
+
+
+
+
+<form action="/blogs/currentUser.id/show" method="POST">
+	<input type="text" name="title" placeholder="Blog Title">
+	<input type="text" name="image" placeholder="Image URL">
+	<div class="form-group">
+		<input class="form-control" type="text" name="body" placeholder="Your blog text goes here...">
+	</div>
+	
+	<input type="submit" value="submit">
+</form>
+
+<%- include("../partials/footer")%>

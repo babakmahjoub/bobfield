@@ -1,0 +1,190 @@
+<%- include("../partials/header") %>
+
+
+ <!-- Page Content -->
+    <div class="container">
+
+      <div class="row">
+
+        <!-- Blog Entries Column -->
+        <div class="col-lg-8 bottom-gap">
+
+          <!-- Title -->
+          <h1 class="mt-4"><%=blog.title%></h1>
+
+          <!-- Author -->
+          <p class="lead">
+            by
+            <a href="/users/<%=blog.author.id%>"><%=blog.author.username%> </a>, <%= moment(blog.createdAt).fromNow() %> 
+          </p>
+
+          <hr>
+
+          <!-- Date/Time -->
+          <p>Posted on January 1, 2018 at 12:00 PM</p>
+
+          <hr>
+
+          <!-- Preview Image -->
+          <img class="card-img-top" src="<%= blog.image %>" alt="Card image cap">
+
+          <hr>
+
+          <!-- Post Content -->
+          <p class="lead"><%= blog.body %></p>
+
+						<% if (currentUser && blog.author.id.equals(currentUser._id)) { %>
+             	<form action="/blogs/<%=blog._id%>/?_method=DELETE" method ="POST" class="form-inline delete-form">
+							<a class="btn btn-warning" href="/blogs/<%=blog.id%>/edit">Edit</a>
+							<button style="margin:5px" class="btn btn-danger">Delete</button>
+						</form>
+            <% } %>
+						
+
+          <hr>
+          <!--Comment section title-->
+          <h4><strong>Comments <span class="glyphicon glyphicon glyphicon-comment" aria-hidden="true"></span></strong></h4>
+
+          <!--COMMENT SECTION START-->
+          <div class="well">
+            <!--Setting up the add new comment button that is used for collapsing-->
+            <div class="text-right">
+              <a class="btn btn-success pull-right" role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment">
+                <span  aria-hidden="true"></span> Add a comment</a>
+            </div>
+            <!--Collapse Add a comment form START-->
+            <div class="collapse" id="collapseComment">
+              <!-- Comments Form -->
+                    <div class="card my-4">
+                      <h5 class="card-header">Leave a Comment:</h5>
+                      <div class="card-body">
+                        <form action="/blogs/<%=blog._id%>/comments" method="POST">
+                          <div class="form-group">
+                            <% if (currentUser){%>
+                                <input  class="form-control" value="<%=currentUser.username%>"  readonly>
+                            <%}%>                             
+                            <!-- Plan A: -->
+                            <textarea  class="form-control" name="text" rows="3"></textarea>
+                            <!-- Plan B : -->
+                            <!-- <textarea  class="form-control" name="comment[text]" rows="3"></textarea> -->
+                          </div>
+                          <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                      </div>
+                    </div>
+            </div>
+            <!-- Single Comment -->
+            <% blog.comments.forEach(function(comment){ %>
+              <div class="media mb-4">
+                <img class="d-flex mr-3 rounded-circle avatar" src="<%=comment.author.avatar%>" alt="">
+                <div class="media-body">  
+                  <h5 class="mt-0"><%= comment.author.firstName + " " + comment.author.lastName %></h5>
+                  <div class="row">
+                    <p class="col-10"><%= comment.text %></p> <p class="comment-moment col-2"><%= moment(comment.createdAt).fromNow() %></p>
+                  </div>
+                    <% if (currentUser && comment.author.id.equals(currentUser._id)) { %>
+                    <!-- Collapsable Edit button -->
+                    <a class="btn btn-sm btn-warning" role="button" data-toggle="collapse" href="#collapseEdit<%=comment._id%>" aria-expanded="false" aria-controls="collapseEdit<%=comment._id%>">
+                      <span aria-hidden="true"></span> Edit
+                    </a>
+                      <!-- DELETE FORM -->
+                      <form class="delete-form " action="/blogs/<%=blog._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST" >
+                        <input type="submit" class="btn btn-sm btn-danger" value="Delete">
+                      </form>
+                        <!-- Collapse Edit -->
+                        <div class="collapse" id="collapseEdit<%=comment._id%>">
+                          <!-- Edit form -->
+                          <div class="card my-4">
+                            <h5 class="card-header">Edit Comment:</h5>
+                            <div class="card-body">
+                              <form action="/blogs/<%=blog._id%>/comments/<%= comment._id%>?_method=PUT" method="POST">
+                                <div class="form-group">
+                                  <% if (currentUser){%>
+                                    <input  class="form-control" value="<%=currentUser.username%>"  readonly>
+                                  <%}%>
+                                  <!-- Plan A: -->
+                                  <textarea  class="form-control" name="text" rows="3"></textarea>
+                                  <!-- Plan B : -->
+                                  <!-- <textarea  class="form-control" name="comment[text]" rows="3"></textarea> -->
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>  
+                    <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="widgetSideShow col-xs-12  col-lg-4">
+          <!-- Search Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">Search</h5>
+            <div class="card-body">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                  <button class="btn btn-secondary" type="button">Go!</button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories Widget -->
+          <div class="card my-3">
+            <h5 class="card-header">Categories</h5>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <ul class="list-unstyled mb-0">
+                    <li>
+                      <a href="#">PS4</a>
+                    </li>
+                    <li>
+                      <a href="#">XBOX</a>
+                    </li>
+                    <li>
+                      <a href="#">STEAM</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-lg-6">
+                  <ul class="list-unstyled mb-0">
+                    <li>
+                      <a href="#">Online Games</a>
+                    </li>
+                    <li>
+                      <a href="#">Cheats</a>
+                    </li>
+                    <li>
+                      <a href="#">Consoles</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">maelezo</h5>
+            <div class="card-body">
+              You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
+            </div>
+          </div>
+ <!-- Side Widget -->
+          <div class="card my-4">
+            <h5 class="card-header">Next Blog</h5>
+            <div class="card-body">
+              <img class="card-img-top" src="https://images.unsplash.com/photo-1548484352-ea579e5233a8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80" alt="Card image cap">
+            </div>
+          </div>
+        </div>  
+      </div> 
+    </div>   
+
+<%- include("../partials/footer")%> 

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+	<!-- Make site responsive on mobile/tablet -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Game Blog</title>
+	<link rel="stylesheet" type="text/css" href="/dist/semantic.min.css">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="/stylesheets/main.css">
+
+</head>
+
+<body>
+	
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+	<div class="container">
+		<a class="navbar-brand" href="/"><i class="fas fa-gamepad"></i> Game Blog</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+	    </button>
+	    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+		    	<li class="<%= typeof page !== 'undefined' && page === 'blogs' ? 'active' : '' %>">
+		    		<a class="nav-link" href="/blogs">Blogs</a>
+		  		</li> 
+			</ul>
+		<ul class="navbar-nav">	
+			<% if (currentUser) { %>
+				<li>
+					<a class="nav-link" href="/users/<%= currentUser.id %> ">Signed in as <strong><%= currentUser.username %></strong> </a>
+				</li>
+				<li>
+					<a class="nav-link" href="/logout">Log out</a>
+				</li>
+			<% } else { %> 		 		
+				<li class="<%= typeof page !== "undefined" && page == "login" ? "active" : "" %>">
+					<a class="nav-link" href="/login">Login</a>
+				</li>
+			<li class="<%= typeof page !== "undefined" && page === "register" ? "active" : "" %>">
+				<a class="nav-link" href="/register">Sign Up</a>
+			</li>
+			<% } %>
+		</ul>
+	  </div>
+	</div>
+</nav>
+	<div class="container">
+		

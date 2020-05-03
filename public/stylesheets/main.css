@@ -1,0 +1,46 @@
+.row {
+	display:flex;
+	flex-wrap: wrap;
+}
+
+body {
+	margin-top:70px;
+}
+
+.widgetSideShow {
+	margin-top: 86px;
+}
+
+.widgetSideIndex {
+	margin-top: -21px;
+}
+
+.delete-form {
+	display: inline;
+}
+
+
+.bottom-gap{
+	margin-bottom: 250px;
+}
+
+.comment-moment{
+	font-size: 12px;
+	padding: 0 5px;
+}
+
+.navbar {
+	font-size: 1.2rem;
+}
+
+.blue {
+	color:blue
+}
+
+.avatar {
+	width: 60px;
+	height: 60px;
+	display: block;
+	margin-right: 15px;
+	object-fit:cover
+}
