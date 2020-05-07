@@ -7,8 +7,33 @@ var   express			= require("express"),
 	  nodemailer		= require("nodemailer"),
 	  crypto			= require("crypto")
 
+						  require('dotenv').config();
+							
 
+//multer Setup
+var multer = require('multer');
+var storage = multer.diskStorage({
+filename: function(req, file, callback) {
+	callback(null, Date.now() + file.originalname);
+}
+});
+var imageFilter = function (req, file, cb) {
+	if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+		return cb(new Error('Only image files are allowed!'), false);
+	}
+	cb(null, true);
+};
+var upload = multer({ storage: storage, fileFilter: imageFilter});
 
+//Cloudinary Setup
+var cloudinary = require('cloudinary');
+cloudinary.config({ 
+cloud_name: 'yourmedia', 
+api_key: process.env.CLOUDINARY_API_KEY, 
+api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+//ROUTES
 router.get ("/", function(req,res){
   res.render("landing")
 });
@@ -19,24 +44,35 @@ router.get("/register", function(req,res){
 })
 
 
-router.post("/register",function(req,res){
-	var newUser = new User(req.body);
-	User.register(newUser, req.body.password, function(err,user){
-		passport.authenticate("local")(req,res,function(){
-			res.redirect("/blogs")
+router.post("/register", upload.single('avatar'),function(req,res){
+	cloudinary.uploader.upload(req.file.path, function(result) {
+		req.body.avatar=result.secure_url;
+		req.body.avatarId=result.public_id;
+		var newUser = new User(req.body);
+		User.register(newUser, req.body.password, function(err,user){
+			if(err){
+				req.flash("error",err.message);
+				return res.redirect("/blogs")
+			}
+			passport.authenticate("local")(req,res,function(){
+				req.flash("success","Successfully registered, Welcome " + user.firstName);
+				res.redirect("/blogs")
+			});
 		});
 	});
 });
 
 
 router.get("/login",function(req,res){
-	res.render("users/login")
+	return res.render("users/login")
 });
 
 
 router.post("/login",passport.authenticate("local",{
 	successRedirect: "/blogs",
-	failureRedirect: "/login"
+	failureRedirect: "/login",
+	successFlash:"Welcome back ",
+	failureFlash: true,
 }),function(req,res){
 
 });
@@ -44,6 +80,7 @@ router.post("/login",passport.authenticate("local",{
 
 router.get("/logout",function(req,res){
 	req.logout();
+	req.flash("success","Logged you out!");
 	res.redirect("/blogs")
 });
 
@@ -62,7 +99,7 @@ router.post("/forgot",function(req,res,next){
 		function(token, done){
 			User.findOne({username:req.body.username}, function(err, user){
 				if (!user){
-					// flash msg
+					req.flash("error","Can not find this username");
 					return res.redirect("/forgot");
 				}
 				user.resetPasswordToken = token;
@@ -77,7 +114,7 @@ router.post("/forgot",function(req,res,next){
 			var smtpTransport = nodemailer.createTransport({
 				service: "Gmail",
 				auth: {
-					user:"babak.mahjoub@gmail.com",
+					user:process.env.GMAILUS,
 					pass: process.env.GMAILPW
 				}
 			});
@@ -92,7 +129,7 @@ router.post("/forgot",function(req,res,next){
 			};
 			smtpTransport.sendMail(mailOptions, function(err){
 				console.log("mail sent");
-				// flsh msg
+				req.flash("success","A password reset link has been sent to your email account");
 				done(err, "done");
 			});
 		},
@@ -106,7 +143,7 @@ router.post("/forgot",function(req,res,next){
 router.get('/reset/:token', function(req, res) {
 	User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
 	  if (!user) {
-		// req.flash('error', 'Password reset token is invalid or has expired.');
+		req.flash('error', 'Password reset token is invalid or has expired.');
 		return res.redirect('/forgot');
 	  }
 	  res.render('users/reset', {token: req.params.token});
@@ -118,7 +155,7 @@ router.get('/reset/:token', function(req, res) {
 	  function(done) {
 		User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
 		  if (!user) {
-			// req.flash('error', 'Password reset token is invalid or has expired.');
+			req.flash('error', 'Password reset token is invalid or has expired.');
 			return res.redirect('back');
 		  }
 		  if(req.body.password === req.body.confirm) {
@@ -133,7 +170,7 @@ router.get('/reset/:token', function(req, res) {
 			  });
 			})
 		  } else {
-			//   req.flash("error", "Passwords do not match.");
+			req.flash("error", "Passwords do not match.");
 			  return res.redirect('back');
 		  }
 		});
@@ -142,19 +179,19 @@ router.get('/reset/:token', function(req, res) {
 		var smtpTransport = nodemailer.createTransport({
 		  service: 'Gmail', 
 		  auth: {
-			user: 'babak.mahjoub@gmail.com',
+			user: process.env.GMAILUS,
 			pass: process.env.GMAILPW
 		}
 		});
 		var mailOptions = {
-		  to: user.email,
-		  from: 'babak.mahjoub@mail.com',
+		  to: user.username,
+		  from: process.env.GMAILUS,
 		  subject: 'Your password has been changed',
 		  text: 'Hello,\n\n' +
 			'This is a confirmation that the password for your account ' + user.username + ' has just been changed.\n'
 		};
 		smtpTransport.sendMail(mailOptions, function(err) {
-		//   req.flash('success', 'Success! Your password has been changed.');
+		req.flash('success', 'Success! Your password has been changed.');
 		  done(err);
 		});
 	  }
@@ -180,15 +217,28 @@ router.get("/users/:id/edit", function(req,res){
 		});
 });
 
-router.put("/users/:id/edit", function(req,res){
-	var firstName	= req.body.firstName,
-		lastName	= req.body.lastName,
-		avatar		= req.body.avatar
-	var user		= {firstName:firstName, lastName:lastName, avatar:avatar}	
-	User.findByIdAndUpdate(req.params.id,user,function(err,editedUser){
-			res.redirect("/users/"+ req.params.id)
+router.put("/users/:id/edit", upload.single("avatar"),function(req,res){
+	
+	User.findById(req.params.id,async function(err,editedUser){
+		if(req.file){
+			try {
+				await cloudinary.v2.uploader.destroy(editedUser.avatarId);
+				var result = await cloudinary.v2.uploader.upload(req.file.path);
+				editedUser.avatar = result.secure_url;
+				editedUser.avatarId = result.public_id;
+			} catch (error) {
+				return res.redirect("/blogs");
+			}
+		}
+		editedUser.firstName = req.body.firstName;
+		editedUser.lastName = req.body.lastName;
+		editedUser.save();
+		res.redirect("/users/"+ req.params.id)
 	});
 });
+
+
+
 
 
 module.exports = router;

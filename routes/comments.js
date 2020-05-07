@@ -20,7 +20,8 @@ router.post("/blogs/:id/comments",middleware.isLoggedIn,function(req,res){
 			comment = {text:text, author:author}
 		Comment.create(comment,function(err, comment){
 			foundBlog.comments.push(comment)
-			foundBlog.save()
+			foundBlog.save();
+			req.flash('success', 'Created a comment!');
 			res.redirect("/blogs/" + foundBlog._id )
 		})
 	})
@@ -48,6 +49,7 @@ router.put("/blogs/:id/comments/:comment_id",middleware.commentOwnership,functio
 	var text	= req.body.text
 		comment	= {text:text}
 	Comment.findByIdAndUpdate(req.params.comment_id,comment,function(err, updatedComment){
+		req.flash('success', 'Comment edited successfully!');
 		res.redirect("/blogs/" + req.params.id)
 	})
 });
@@ -61,6 +63,7 @@ router.put("/blogs/:id/comments/:comment_id",middleware.commentOwnership,functio
 
 router.delete("/blogs/:id/comments/:comment_id",middleware.commentOwnership,function(req,res){
 	Comment.findByIdAndRemove(req.params.comment_id,function(err){
+		req.flash('success', 'Comment Deleted!');
 		res.redirect("/blogs/" + req.params.id)
 	});
 	

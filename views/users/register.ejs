@@ -7,9 +7,9 @@
 	
 
 
-<form action="/register" method="POST">
+<form action="/register" method="POST" enctype="multipart/form-data">
       <div class="text-center mb-4">
-		  <i class=" fa-2x fas fa-gamepad"></i>
+		    <i class=" fa-2x fas fa-user-plus"></i>
         <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
       </div>
 
@@ -29,10 +29,15 @@
         <input type="text" class="form-control" name="lastName" placeholder="Last Name" required="" autofocus="">
       </div>
 
-      <div class="form-group">
+      <!-- <div class="form-group">
         <input type="text" class="form-control" name="avatar" placeholder="avatar url" required="" autofocus="">
+      </div> -->
+
+      <div class="custom-file mb-4 mr-sm-2">
+        <label class="custom-file-label" for="image">Upload Avatar</label>
+        <input class="custom-file-input" type="file" id="image" name="avatar" accept="image/*" required >
       </div>
-      
+
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
       <p class="mt-5 mb-3 text-muted text-center">© Game Blog 2020</p>
 </form>

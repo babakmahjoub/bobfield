@@ -7,6 +7,7 @@ middlewareObj.isLoggedIn = function(req,res,next){
     if(req.isAuthenticated()){
         return next();
     }
+    req.flash("error","Please Login First");
     res.redirect("/login") 
 }   
 
@@ -16,9 +17,11 @@ middlewareObj.blogOwnership = function(req,res,next){
             if(foundBlog.author.id.equals(req.user._id)){
                 return next();
             }
+            req.flash("error","You do not have permission to perform this action");
             res.redirect("/blogs/"+ req.params.id)
         });
     } else {
+        req.flash("error","Please Login First");
         res.redirect("/login")
     };
 };
@@ -29,9 +32,11 @@ middlewareObj.commentOwnership = function(req,res,next){
             if(foundComment.author.id.equals(req.user._id)){
                 return next();
             }
+            req.flash("error","You do not have permission to perform this action");
             res.redirect("/blogs/" + req.params.id)
         });
     } else {
+        req.flash("error","Please Login First");
         res.redirect("/login")
     }
 };

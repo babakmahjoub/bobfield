@@ -1,17 +1,40 @@
 <%- include("../partials/header") %>
 
+<div class="row" >
+
+<div style="width:35%; margin:25px auto">
 
 
+<form action="/blogs" method="POST" enctype="multipart/form-data">
+	<div class="text-center mb-4">
+		<i class=" fa-2x fas fa-pen-fancy"></i>
+		<h1 class="h3 mb-3 font-weight-normal">New Blog</h1>
+  	</div>
 
-
-<form action="/blogs/currentUser.id/show" method="POST">
-	<input type="text" name="title" placeholder="Blog Title">
-	<input type="text" name="image" placeholder="Image URL">
-	<div class="form-group">
-		<input class="form-control" type="text" name="body" placeholder="Your blog text goes here...">
+	<div class="form-gorup mb-3 ">
+		<input class="form-control" type="text" name="title" placeholder="Blog Title">
 	</div>
-	
-	<input type="submit" value="submit">
+
+	<div class="custom-file mb-3 ">
+		<label class="custom-file-label" for="image">Image</label>
+		<input class="custom-file-input" type="file" id="image" name="image" accept="image/*" >
+	</div>
+
+	<div class="form-group">
+		<input class="form-control" type="text" name="image" placeholder="Image URL">
+	</div>
+
+	<div class="form-group">
+		<!-- <label for="body">Type your blog</label> -->
+   		<textarea class="form-control" name="body" id="body" rows="3" placeholder="Your blog text goes here..." ></textarea>
+	</div>
+
+	<button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+	<p class="mt-5 mb-3 text-muted text-center">© Game Blog 2020</p>
+
 </form>
+
+</div>
+</div>
 
 <%- include("../partials/footer")%>

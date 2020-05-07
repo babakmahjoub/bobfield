@@ -24,12 +24,13 @@ var indexroutes		= require("./routes/index.js"),
 
 
 //APP CONFIG
-mongoose.connect("mongodb://localhost:27017/game_blog",{useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect("mongodb://localhost:27017/game_blog",{useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex:true})
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine","ejs")
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/semantic"));
 app.use(methodOverride("_method"));
+app.use(flash());
 app.locals.moment = require('moment');
 require('dotenv').config();
 
@@ -49,6 +50,8 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req,res,next){
 	res.locals.currentUser=req.user;
+	res.locals.success=req.flash("success");
+	res.locals.error=req.flash("error");
 	next();
 });
 	  
