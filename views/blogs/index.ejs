@@ -17,11 +17,14 @@
 			<% blogs.forEach(function(blog){ %>
 				<div class="col-md-6 col-sm-12">
 				<div class="mb-4 card">
-					<img class=" card-img-top" src="<%= blog.image %>" alt="Card image cap" style="height: 20rem; object-fit:cover">
-					<div class="card-body">
+          <div class="click-for-more">
+            <img class="card-img-top" src="<%= blog.image %>" alt="Card image cap" style="height: 20rem; object-fit:cover">
+            <a href="/blogs/<%= blog._id %>" class="btn btn-primary btn-md btn-read-more">Read More</a>
+          </div>
+          <div class="card-body">
 						<h4 class="card-title"><a href="/blogs/<%= blog._id %>"><%= blog.title %></a></h4>
 						<p class="card-text"><%= blog.body.substring(0,100) %>...</p>
-						<a href="/blogs/<%= blog._id %>" class="btn btn-primary btn-sm">Read More</a>
+						
 					</div>
 				</div> 
 				</div>
