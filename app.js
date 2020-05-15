@@ -6,9 +6,9 @@ var express			= require("express"),
 	passport		= require("passport"),
 	localStrategy	= require("passport-local"),
 	expressSession	= require("express-session"),
-	methodOverride	= require("method-override")
-	
+	methodOverride	= require("method-override");
 
+    
 
 
 var Blog			= require("./models/blog.js"),
@@ -32,7 +32,6 @@ app.use(express.static(__dirname + "/semantic"));
 app.use(methodOverride("_method"));
 app.use(flash());
 app.locals.moment = require('moment');
-require('dotenv').config();
 
 
 //PASSPORT CONFIG
@@ -65,3 +64,5 @@ app.use (commentroutes);
 app.listen (process.env.PORT || "3000", function(){
   console.log("server is running...")
 });
+
+

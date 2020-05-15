@@ -39,6 +39,10 @@ router.get ("/", function(req,res){
 });
 
 
+router.get ("/quiz", function(req,res){
+	res.render("quiz")
+})
+
 router.get("/register", function(req,res){
 	res.render("users/register")
 })
